@@ -47,17 +47,24 @@
   }
   
   function addToArray(){
-    const date = new Date()
 
-    let valueToPush = ref({
-      date: `${date.getUTCDate()}/${date.getMonth()}/${date.getFullYear()}`,
-      text: textArea.value,
-      bg: getRandomColor()
-    })
+    if (textArea.value.length <= 5){
+      alert('please, add a meaningful note')
+    }
+    else{
+      const date = new Date()
+  
+      let valueToPush = ref({
+        date: `${date.getUTCDate()}/${date.getMonth()}/${date.getFullYear()}`,
+        text: textArea.value,
+        bg: getRandomColor()
+      })
+  
+      textArray.value.push(valueToPush.value)
+      textArea.value = ""
+      console.log(valueToPush.value.date);
+    }
 
-    textArray.value.push(valueToPush.value)
-    textArea.value = ""
-    console.log(valueToPush.value.date);
   }
 
   function getRandomColor() {
