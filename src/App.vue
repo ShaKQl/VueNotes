@@ -1,28 +1,23 @@
 <template>
   <main>
 
-    <div class="overlay">
+    <div v-if="showModal" class="overlay">
       <div class="overlay__module">
-        <textarea class="overlay__text" name="note" id="note" cols="30" rows="10"></textarea>
-        <button class="overlay__btn">Add Note</button>
-        <button class="overlay__btnClose">Close</button>
+        <textarea v-model="textArea" class="overlay__text" name="note" id="note" cols="30" rows="10"></textarea>
+        <button class="overlay__btn" @click="addToArray(), showModal= !showModal ">Add Note</button>
       </div>
     </div>
 
     <div class="container">
       <header>
         <h1>Notes</h1>
-        <button>+</button>
+        <button class="header__btn" ref="btn" @click="showModal = !showModal, rotateBtn(showModal)">+</button>
       </header>
 
       <div class="cards__container">
-        <div class="card">
-          <p class="card__desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi beatae adipisci distinctio temporibus vero! Tempore autem nesciunt ducimus distinctio illum dolor, inventore placeat tempora sunt?</p>
-          <p class="card__date"></p>
-        </div>
-        <div class="card">
-          <p class="card__desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi beatae adipisci distinctio temporibus vero! Tempore autem nesciunt ducimus distinctio illum dolor, inventore placeat tempora sunt?</p>
-          <p class="card__date"></p>
+        <div v-for="el, index in textArray" :style="'background-color:'+ el.bg " :key="index" class="card">
+          <p class="card__desc">{{ el.text }}</p>
+          <p class="card__date">{{ el.date }}</p>
         </div>
       </div>
     </div>
@@ -34,6 +29,40 @@
 
 
 <script setup>
+  import { ref, defineModel } from "vue";
+
+  const showModal = ref(false)
+  const btn = ref(null)
+  let num = 1
+  
+  let textArea = defineModel()
+  let textArray = ref([
+    
+  ])
+  
+  function rotateBtn(el){
+    btn.value.style.transition = `o.5sec`
+    btn.value.style.transform = `rotateZ(${45*num}deg)`
+    num++
+  }
+  
+  function addToArray(){
+    const date = new Date()
+
+    let valueToPush = ref({
+      date: `${date.getUTCDate()}/${date.getMonth()}/${date.getFullYear()}`,
+      text: textArea.value,
+      bg: getRandomColor()
+    })
+
+    textArray.value.push(valueToPush.value)
+    textArea.value = ""
+    console.log(valueToPush.value.date);
+  }
+
+  function getRandomColor() {
+    return "hsl(" + Math.random() * 360 + ", 100%, 75%)";
+  }
 
 </script>
 
@@ -71,7 +100,7 @@
     font-size: 75px;
     }
 
-  header button{
+  .header__btn{
     border: none;
     font-size: 25px;
     padding: 10px;
@@ -81,6 +110,7 @@
     background-color: rgb(21, 20, 20);
     border-radius: 100%;
     color: #fff;
+    z-index: 99;
   }
 
   .card{
@@ -91,10 +121,17 @@
     border-radius: 15px;
     display: flex;
     justify-content: space-between;
+    flex-direction: column;
     margin-right: 20px;
     margin-bottom: 20px;
+    color: rgb(76, 76, 76);
   }
-
+  
+  .card__desc{
+    font-family: 'Roboto';
+    font-weight: bold;
+  }
+  
   .card__date{
     font-size: 12.5px;
     font-weight: bold;
@@ -103,9 +140,10 @@
   .cards__container{
     display: flex;
     flex-wrap: wrap;
+    font-weight: bold;
   }
-
-
+  
+  
   .overlay{
     position: absolute;
     width: 100%;
@@ -116,9 +154,8 @@
     align-items: center;
     justify-content: center;
     
-    display: none;
   }
-
+  
   .overlay__module{
     width: 750px;
     background-color: #fff;
@@ -127,7 +164,7 @@
     position: relative;
     display: flex;
     flex-direction: column;
-
+    
     
   }
 
@@ -140,8 +177,8 @@
     cursor: pointer;
     margin-top: 15px;;
   }
-
+  
   .overlay__btnClose{
     background-color: red;
   }
-</style>
+  </style>
